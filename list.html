@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script>
+        var app = angular.module('list', []);
+        app.controller('listController', function ($scope) {
+            // リスト
+            $scope.Weathers = [];
+        });
+
+        $(document).ready(function () {
+            $.ajax({
+                type: 'GET',
+                url: 'http://api.openweathermap.org/data/2.5/forecast?q=sendai&APPID=4b9689433c8818117ab3be9a8520b49b',
+                success: function (result) {
+                    var $scope = angular.element('#List').scope();
+                    $scope.Weathers = result.list;
+                    $scope.$apply();
+                    console.log(result);
+                },
+                error: function () {
+                    alert('情報の取得に失敗しました。');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <table id="List" ng-app="list" ng-controller="listController">
+        <thead>
+            <tr>
+                <th>お天気一覧</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="weather in Weathers">
+                <td>{{weather.dt_txt}}</td>
+                <td><img src="http://openweathermap.org/img/w/{{weather.weather[0].icon}}.png"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

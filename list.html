@@ -16,10 +16,18 @@
         $(document).ready(function () {
             $.ajax({
                 type: 'GET',
-                url: 'https://api.openweathermap.org/data/2.5/forecast?q=sendai&APPID=4b9689433c8818117ab3be9a8520b49b',
+                url: 'https://api.openweathermap.org/data/2.5/forecast?q=sendai&APPID=4b9689433c8818117ab3be9a8520b49b&units=metric',
                 success: function (result) {
+
+                    var list = [];
+                    for (var i = 0; i < result.list.length; i++) {
+                        var date = new Date(result.list[i].dt_txt);
+                        date.setTime(date.getTime() + 1000 * 60 * 60 * 9);// JSTに変換
+                        list.push({ 'dt_txt': date.toLocaleString(), 'temp': result.list[i].main.temp, 'icon': result.list[i].weather[0].icon });
+                    }
+
                     var $scope = angular.element('#List').scope();
-                    $scope.Weathers = result.list;
+                    $scope.Weathers = list;
                     $scope.$apply();
                     console.log(result);
                 },
@@ -36,12 +44,14 @@
             <tr>
                 <th>仙台の天気予報</th>
                 <th></th>
+                <th>気温</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="weather in Weathers">
                 <td>{{weather.dt_txt}}</td>
-                <td><img src="https://openweathermap.org/img/w/{{weather.weather[0].icon}}.png"></td>
+                <td><img src="https://openweathermap.org/img/w/{{weather.icon}}.png"></td>
+                <td>{{weather.temp}}</td>
             </tr>
         </tbody>
     </table>

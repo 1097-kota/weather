@@ -16,7 +16,7 @@
         $(document).ready(function () {
             $.ajax({
                 type: 'GET',
-                url: 'http://api.openweathermap.org/data/2.5/forecast?q=sendai&APPID=4b9689433c8818117ab3be9a8520b49b',
+                url: 'https://api.openweathermap.org/data/2.5/forecast?q=sendai&APPID=4b9689433c8818117ab3be9a8520b49b',
                 success: function (result) {
                     var $scope = angular.element('#List').scope();
                     $scope.Weathers = result.list;

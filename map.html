@@ -1,0 +1,200 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.4/css/ol.css" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/linq.js/2.2.0.2/jquery.linq.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/linq.js/2.2.0.2/linq.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://openlayers.org/en/v4.6.4/build/ol.js"></script>
+    <script type="text/javascript">
+        // APIキー
+        var appID = '4b9689433c8818117ab3be9a8520b49b';
+
+        // Angularのコントローラ定義
+        var app = angular.module('list', []);
+        app.controller('listController', function ($scope) {
+            // リスト
+            $scope.Weathers = [];
+        });
+
+        $(document).ready(function () {
+
+            // 表示したい市町村情報
+            var cities = [
+                { name: "仙台", lat: 38.26889, lon: 140.871933, id: 2111149 },
+                { name: "白石", lat: 37.997, lon: 140.5793, id: 2111016 },
+                { name: "角田", lat: 37.989, lon: 140.7797, id: 2128295 },
+                { name: "富谷", lat: 38.3795, lon: 140.9013, id: 2110744 },
+                { name: "岩沼", lat: 38.1061, lon: 140.8639, id: 2112527 },
+                { name: "塩釜", lat: 38.3297, lon: 141.0221, id: 2111049 },
+                { name: "松島", lat: 38.3977, lon: 141.0742, id: 2111964 },
+                { name: "石巻", lat: 38.4167, lon: 141.3, id: 2112576 },
+                { name: "亘理", lat: 38.0423, lon: 140.8741, id: 2110586 },
+                { name: "丸森", lat: 37.9021, lon: 140.7629, id: 2112008 },
+                { name: "涌谷", lat: 38.56, lon: 141.1537, id: 2110596 },
+                { name: "古川", lat: 38.5717, lon: 140.9556, id: 2112899 }
+            ];
+
+            // 予測情報の取得
+            function getForecast(id) {
+                $.ajax({
+                    type: 'GET',
+                    url: 'https://api.openweathermap.org/data/2.5/forecast?id=' + id + '&APPID=' + appID + '&units=metric',
+                    success: function (result) {
+                        var list = [];
+                        for (var i = 0; i < result.list.length; i++) {
+                            var date = new Date(result.list[i].dt_txt);
+                            date.setTime(date.getTime() + 1000 * 60 * 60 * 9);// JSTに変換
+                            list.push({ 'dt_txt': date.toLocaleString(), 'temp': result.list[i].main.temp, 'icon': result.list[i].weather[0].icon });
+                        }
+
+                        var $scope = angular.element('#List').scope();
+                        $scope.Weathers = list;
+                        $scope.$apply();
+                        $(".modal-title").text(Enumerable.From(cities).Where(c => c.id == id).Single().name + 'の予報一覧');
+                        $("#myModal").modal();
+                    },
+                    error: function () {
+                        alert('情報の取得に失敗しました。');
+                    }
+                });
+            }
+
+            // まとめて情報を取得したいので、APIの引数向けにカンマ区切りでコード値を連結する
+            var ids = Enumerable.From(cities).Select(c => c.id).ToArray().join(",");
+
+            $.ajax({
+                type: 'GET',
+                url: 'https://api.openweathermap.org/data/2.5/group?id=' + ids + '&APPID=' + appID + '&units=metric',
+                success: function (result) {
+                    console.log(result);
+
+                    // デフォルトのスタイル関数
+                    // アイコンと表示テキストを市町村ごとに変えるよう設定しておく
+                    var markerStyleDefault = function (feature, resolution) {
+                        var styles = [
+                            new ol.style.Style({
+                                image: new ol.style.Icon({
+                                    src: "https://openweathermap.org/img/w/" + feature.get("icon") + ".png"
+                                }),
+                                text: new ol.style.Text({
+                                    stroke: new ol.style.Stroke({ color: "#ffffff", width: 2 }),
+                                    scale: 1.4,
+                                    textAlign: "left",
+                                    textBaseline: "top",
+                                    offsetY: 0,
+                                    text: feature.get("text")
+                                })
+                            })
+                        ];
+                        return styles;
+                    };
+
+                    // APIの結果から、気温と天気アイコンの情報を取得し、
+                    // 各地点の図形情報を追加
+                    var featureList = [];
+                    for (var i = 0; i < cities.length; i++) {
+                        var cityInfo = Enumerable.From(result.list).Where(c => c.id == cities[i].id).SingleOrDefault();
+
+                        if (cityInfo) {
+                            featureList.push(new ol.Feature({
+                                geometry: new ol.geom.Point([cities[i].lon, cities[i].lat]),
+                                id: cities[i].id,
+                                text: cities[i].name + "\n" + cityInfo.main.temp + "℃",
+                                icon: cityInfo.weather[0].icon
+                            }));
+                        }
+                    }
+
+                    // 図形リストをソースとして設定
+                    var markerSource = new ol.source.Vector({
+                        features: featureList
+                    });
+
+                    // ソースをベクターレイヤに設定
+                    var markerLayer = new ol.layer.Vector({
+                        source: markerSource,
+                        style: markerStyleDefault
+                    });
+
+                    // 地図を設定
+                    var map = new ol.Map({
+                        layers: [
+                            new ol.layer.Tile({
+                                source: new ol.source.OSM()
+                            }),
+                            markerLayer
+                        ],
+                        target: 'map',
+                        controls: ol.control.defaults({
+                            attributionOptions: {
+                                collapsible: false
+                            }
+                        }),
+                        view: new ol.View({
+                            projection: 'EPSG:4326',            // 緯度経度
+                            center: [140.869356, 38.268215],    // 仙台
+                            zoom: 10
+                        })
+                    });
+
+                    // 図形選択イベント
+                    var select = new ol.interaction.Select({
+                        condition: ol.events.condition.click
+                    });
+                    select.on('select', function (e) {
+                        var feature = e.target.getFeatures();
+                        if (feature.item(0)) {
+                            getForecast(feature.item(0).N.id);
+                        }
+                    });
+                    map.addInteraction(select);
+
+                },
+                error: function () {
+                    alert('情報の取得に失敗しました。');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="map"></div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <table id="List" ng-app="list" ng-controller="listController">
+                        <thead>
+                            <tr>
+                                <th>予報</th>
+                                <th></th>
+                                <th>気温</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="weather in Weathers">
+                                <td>{{weather.dt_txt}}</td>
+                                <td><img src="https://openweathermap.org/img/w/{{weather.icon}}.png"></td>
+                                <td>{{weather.temp}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">とじる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html >

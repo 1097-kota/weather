@@ -9,35 +9,35 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <script src="https://openlayers.org/en/v4.6.4/build/ol.js"></script>
     <script type="text/javascript">
-        // APIƒL[
+        // APIã‚­ãƒ¼
         var appID = '4b9689433c8818117ab3be9a8520b49b';
 
-        // Angular‚ÌƒRƒ“ƒgƒ[ƒ‰’è‹`
+        // Angularã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©å®šç¾©
         var app = angular.module('list', []);
         app.controller('listController', function ($scope) {
-            // ƒŠƒXƒg
+            // ãƒªã‚¹ãƒˆ
             $scope.Weathers = [];
         });
 
         $(document).ready(function () {
 
-            // •\¦‚µ‚½‚¢s’¬‘ºî•ñ
+            // è¡¨ç¤ºã—ãŸã„å¸‚ç”ºæ‘æƒ…å ±
             var cities = [
-                { name: "å‘ä", lat: 38.26889, lon: 140.871933, id: 2111149 },
-                { name: "”’Î", lat: 37.997, lon: 140.5793, id: 2111016 },
-                { name: "Šp“c", lat: 37.989, lon: 140.7797, id: 2128295 },
-                { name: "•x’J", lat: 38.3795, lon: 140.9013, id: 2110744 },
-                { name: "ŠâÀ", lat: 38.1061, lon: 140.8639, id: 2112527 },
-                { name: "‰–Š˜", lat: 38.3297, lon: 141.0221, id: 2111049 },
-                { name: "¼“‡", lat: 38.3977, lon: 141.0742, id: 2111964 },
-                { name: "ÎŠª", lat: 38.4167, lon: 141.3, id: 2112576 },
-                { name: "˜j—", lat: 38.0423, lon: 140.8741, id: 2110586 },
-                { name: "ŠÛX", lat: 37.9021, lon: 140.7629, id: 2112008 },
-                { name: "—O’J", lat: 38.56, lon: 141.1537, id: 2110596 },
-                { name: "ŒÃì", lat: 38.5717, lon: 140.9556, id: 2112899 }
+                { name: "ä»™å°", lat: 38.26889, lon: 140.871933, id: 2111149 },
+                { name: "ç™½çŸ³", lat: 37.997, lon: 140.5793, id: 2111016 },
+                { name: "è§’ç”°", lat: 37.989, lon: 140.7797, id: 2128295 },
+                { name: "å¯Œè°·", lat: 38.3795, lon: 140.9013, id: 2110744 },
+                { name: "å²©æ²¼", lat: 38.1061, lon: 140.8639, id: 2112527 },
+                { name: "å¡©é‡œ", lat: 38.3297, lon: 141.0221, id: 2111049 },
+                { name: "æ¾å³¶", lat: 38.3977, lon: 141.0742, id: 2111964 },
+                { name: "çŸ³å·»", lat: 38.4167, lon: 141.3, id: 2112576 },
+                { name: "äº˜ç†", lat: 38.0423, lon: 140.8741, id: 2110586 },
+                { name: "ä¸¸æ£®", lat: 37.9021, lon: 140.7629, id: 2112008 },
+                { name: "æ¶Œè°·", lat: 38.56, lon: 141.1537, id: 2110596 },
+                { name: "å¤å·", lat: 38.5717, lon: 140.9556, id: 2112899 }
             ];
 
-            // —\‘ªî•ñ‚Ìæ“¾
+            // äºˆæ¸¬æƒ…å ±ã®å–å¾—
             function getForecast(id) {
                 $.ajax({
                     type: 'GET',
@@ -46,23 +46,23 @@
                         var list = [];
                         for (var i = 0; i < result.list.length; i++) {
                             var date = new Date(result.list[i].dt_txt);
-                            date.setTime(date.getTime() + 1000 * 60 * 60 * 9);// JST‚É•ÏŠ·
+                            date.setTime(date.getTime() + 1000 * 60 * 60 * 9);// JSTã«å¤‰æ›
                             list.push({ 'dt_txt': date.toLocaleString(), 'temp': result.list[i].main.temp, 'icon': result.list[i].weather[0].icon });
                         }
 
                         var $scope = angular.element('#List').scope();
                         $scope.Weathers = list;
                         $scope.$apply();
-                        $(".modal-title").text(Enumerable.From(cities).Where(c => c.id == id).Single().name + '‚Ì—\•ñˆê——');
+                        $(".modal-title").text(Enumerable.From(cities).Where(c => c.id == id).Single().name + 'ã®äºˆå ±ä¸€è¦§');
                         $("#myModal").modal();
                     },
                     error: function () {
-                        alert('î•ñ‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½B');
+                        alert('æƒ…å ±ã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸã€‚');
                     }
                 });
             }
 
-            // ‚Ü‚Æ‚ß‚Äî•ñ‚ğæ“¾‚µ‚½‚¢‚Ì‚ÅAAPI‚Ìˆø”Œü‚¯‚ÉƒJƒ“ƒ}‹æØ‚è‚ÅƒR[ƒh’l‚ğ˜AŒ‹‚·‚é
+            // ã¾ã¨ã‚ã¦æƒ…å ±ã‚’å–å¾—ã—ãŸã„ã®ã§ã€APIã®å¼•æ•°å‘ã‘ã«ã‚«ãƒ³ãƒåŒºåˆ‡ã‚Šã§ã‚³ãƒ¼ãƒ‰å€¤ã‚’é€£çµã™ã‚‹
             var ids = Enumerable.From(cities).Select(c => c.id).ToArray().join(",");
 
             $.ajax({
@@ -71,8 +71,8 @@
                 success: function (result) {
                     console.log(result);
 
-                    // ƒfƒtƒHƒ‹ƒg‚ÌƒXƒ^ƒCƒ‹ŠÖ”
-                    // ƒAƒCƒRƒ“‚Æ•\¦ƒeƒLƒXƒg‚ğs’¬‘º‚²‚Æ‚É•Ï‚¦‚é‚æ‚¤İ’è‚µ‚Ä‚¨‚­
+                    // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚¹ã‚¿ã‚¤ãƒ«é–¢æ•°
+                    // ã‚¢ã‚¤ã‚³ãƒ³ã¨è¡¨ç¤ºãƒ†ã‚­ã‚¹ãƒˆã‚’å¸‚ç”ºæ‘ã”ã¨ã«å¤‰ãˆã‚‹ã‚ˆã†è¨­å®šã—ã¦ãŠã
                     var markerStyleDefault = function (feature, resolution) {
                         var styles = [
                             new ol.style.Style({
@@ -92,8 +92,8 @@
                         return styles;
                     };
 
-                    // API‚ÌŒ‹‰Ê‚©‚çA‹C‰·‚Æ“V‹CƒAƒCƒRƒ“‚Ìî•ñ‚ğæ“¾‚µA
-                    // Še’n“_‚Ì}Œ`î•ñ‚ğ’Ç‰Á
+                    // APIã®çµæœã‹ã‚‰ã€æ°—æ¸©ã¨å¤©æ°—ã‚¢ã‚¤ã‚³ãƒ³ã®æƒ…å ±ã‚’å–å¾—ã—ã€
+                    // å„åœ°ç‚¹ã®å›³å½¢æƒ…å ±ã‚’è¿½åŠ 
                     var featureList = [];
                     for (var i = 0; i < cities.length; i++) {
                         var cityInfo = Enumerable.From(result.list).Where(c => c.id == cities[i].id).SingleOrDefault();
@@ -102,24 +102,24 @@
                             featureList.push(new ol.Feature({
                                 geometry: new ol.geom.Point([cities[i].lon, cities[i].lat]),
                                 id: cities[i].id,
-                                text: cities[i].name + "\n" + cityInfo.main.temp + "",
+                                text: cities[i].name + "\n" + cityInfo.main.temp + "â„ƒ",
                                 icon: cityInfo.weather[0].icon
                             }));
                         }
                     }
 
-                    // }Œ`ƒŠƒXƒg‚ğƒ\[ƒX‚Æ‚µ‚Äİ’è
+                    // å›³å½¢ãƒªã‚¹ãƒˆã‚’ã‚½ãƒ¼ã‚¹ã¨ã—ã¦è¨­å®š
                     var markerSource = new ol.source.Vector({
                         features: featureList
                     });
 
-                    // ƒ\[ƒX‚ğƒxƒNƒ^[ƒŒƒCƒ„‚Éİ’è
+                    // ã‚½ãƒ¼ã‚¹ã‚’ãƒ™ã‚¯ã‚¿ãƒ¼ãƒ¬ã‚¤ãƒ¤ã«è¨­å®š
                     var markerLayer = new ol.layer.Vector({
                         source: markerSource,
                         style: markerStyleDefault
                     });
 
-                    // ’n}‚ğİ’è
+                    // åœ°å›³ã‚’è¨­å®š
                     var map = new ol.Map({
                         layers: [
                             new ol.layer.Tile({
@@ -134,13 +134,13 @@
                             }
                         }),
                         view: new ol.View({
-                            projection: 'EPSG:4326',            // ˆÜ“xŒo“x
-                            center: [140.869356, 38.268215],    // å‘ä
+                            projection: 'EPSG:4326',            // ç·¯åº¦çµŒåº¦
+                            center: [140.869356, 38.268215],    // ä»™å°
                             zoom: 10
                         })
                     });
 
-                    // }Œ`‘I‘ğƒCƒxƒ“ƒg
+                    // å›³å½¢é¸æŠã‚¤ãƒ™ãƒ³ãƒˆ
                     var select = new ol.interaction.Select({
                         condition: ol.events.condition.click
                     });
@@ -154,7 +154,7 @@
 
                 },
                 error: function () {
-                    alert('î•ñ‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½B');
+                    alert('æƒ…å ±ã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸã€‚');
                 }
             });
         });
@@ -176,9 +176,9 @@
                     <table id="List" ng-app="list" ng-controller="listController">
                         <thead>
                             <tr>
-                                <th>—\•ñ</th>
+                                <th>äºˆå ±</th>
                                 <th></th>
-                                <th>‹C‰·</th>
+                                <th>æ°—æ¸©</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -191,7 +191,7 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">‚Æ‚¶‚é</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">ã¨ã˜ã‚‹</button>
                 </div>
             </div>
         </div>
